@@ -1,5 +1,15 @@
 # ⚡ Hogwarts Wiki · Enciclopedia del Mundo Mágico
 
+**🔗 Web publicada: https://cnfnavarro.github.io/hogwarts-wiki/**
+
+![Portada de Hogwarts Wiki con el tráiler de fondo](docs/portada.jpg)
+
+| Mapa del Merodeador | Constelación de relaciones |
+|---|---|
+| ![Mapa del Merodeador con los personajes moviéndose por Hogwarts](docs/mapa-merodeador.jpg) | ![Constelación de relaciones de Harry Potter](docs/relaciones.jpg) |
+
+![Galería de retratos de los personajes](docs/retratos.jpg)
+
 Wiki interactiva de una sola página sobre el mundo de Harry Potter, hecha con **HTML5, CSS3, JavaScript, Bootstrap 5** y **D3.js**.
 
 ## Cómo abrirla
@@ -66,3 +76,5 @@ Para añadir un personaje: un objeto en `PERSONAJES`, su página de la Harry Pot
 ## Créditos
 
 Proyecto de fans sin ánimo de lucro. Harry Potter pertenece a J. K. Rowling y Warner Bros. Imágenes de los personajes vía Harry Potter Wiki (Fandom); tráileres, clips y banda sonora oficiales embebidos desde YouTube.
+
+Espacio web diseñado por **Cristian Navarro Fernández**.
