@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hogwarts Wiki · Enciclopedia del Mundo Mágico</title>
+  <meta name="description" content="Enciclopedia interactiva del mundo de Harry Potter: personajes, actores, relaciones e historia.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body data-bs-theme="dark" data-house="todas" data-vista="retratos">
+
+  <!-- ===================== CAPAS DE FONDO ===================== -->
+  <div class="bg-video" id="bgVideo" aria-hidden="true"><div id="ytPlayer"></div></div>
+  <div class="bg-aurora" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+  <canvas id="magicCanvas" aria-hidden="true"></canvas>
+  <div id="noxLayer" aria-hidden="true"></div>
+
+  <!-- ===================== PANTALLA DE CARGA ===================== -->
+  <div id="loader">
+    <div class="snitch">
+      <span class="wing left"></span><span class="ball"></span><span class="wing right"></span>
+    </div>
+    <p class="loader-text">Abriendo las puertas del Gran Comedor…</p>
+  </div>
+
+  <!-- ===================== NAVEGACIÓN ===================== -->
+  <nav class="navbar navbar-expand-lg sticky-top glass-nav" id="mainNav">
+    <div class="container-xxl">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#" data-view="retratos">
+        <span class="brand-bolt">⚡</span>
+        <span class="brand-text">Hogwarts <em>Wiki</em></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto view-switch" role="tablist">
+          <li class="nav-item"><button class="nav-link active" data-view="retratos"><i class="bi bi-person-badge"></i> Retratos</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="mapa"><i class="bi bi-diagram-3"></i> Relaciones</button></li>
+          <li class="nav-item"><button class="nav-link nav-marauder" data-view="merodeador"><i class="bi bi-map"></i> Mapa del Merodeador</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="cronologia"><i class="bi bi-hourglass-split"></i> Cronología</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="casas"><i class="bi bi-shield-shaded"></i> Casas</button></li>
+        </ul>
+        <div class="d-flex gap-2 nav-actions">
+          <button class="btn btn-magic-outline" id="btnSombrero" title="Ceremonia de Selección"><i class="bi bi-magic"></i> <span>Sombrero</span></button>
+          <button class="btn btn-magic-outline" id="btnAccio" title="Personaje al azar (Accio)"><i class="bi bi-shuffle"></i> <span>Accio</span></button>
+          <button class="btn btn-magic" id="btnLumos" title="Lumos / Nox"><i class="bi bi-lightbulb-fill"></i> <span>Nox</span></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero" id="hero">
+    <div class="candles" id="candles" aria-hidden="true"></div>
+
+    <div class="container-xxl position-relative hero-inner">
+      <p class="hero-kicker reveal">Enciclopedia interactiva · Edición del Profeta</p>
+      <h1 class="hero-title reveal" data-text="El Mundo de Harry Potter">El Mundo de <span>Harry Potter</span></h1>
+
+      <div class="hero-cta reveal">
+        <button class="btn btn-magic btn-lg" data-view="retratos" data-scroll="true"><i class="bi bi-stars"></i> Explorar personajes</button>
+        <button class="btn btn-magic-outline btn-lg" data-view="merodeador" data-scroll="true"><i class="bi bi-map"></i> Abrir el Mapa del Merodeador</button>
+      </div>
+
+
+    </div>
+
+
+  </header>
+
+  <!-- ===================== BARRA DE FILTROS ===================== -->
+  <section class="toolbar sticky-toolbar" id="toolbar">
+    <div class="container-xxl">
+      <div class="toolbar-inner">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="search" id="searchInput" class="form-control" placeholder="Busca un personaje, actor o casa…  (pulsa / )" autocomplete="off" aria-label="Buscar personajes">
+        </div>
+
+        <div class="house-filter" id="houseFilter" role="group" aria-label="Filtrar por casa"></div>
+
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <select id="groupFilter" class="form-select form-select-sm magic-select" aria-label="Filtrar por grupo"></select>
+          <select id="importanceFilter" class="form-select form-select-sm magic-select" aria-label="Filtrar por importancia"></select>
+          <span class="result-count" id="resultCount"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTENIDO ===================== -->
+  <main class="container-xxl pb-5" id="main">
+
+    <!-- Vista: Retratos -->
+    <section class="view active" id="view-retratos" aria-label="Retratos de personajes">
+      <div class="section-head">
+        <h2 class="section-title">Galería de retratos</h2>
+        <p class="section-sub">Como en los cuadros de Hogwarts, estos retratos se mueven. Pasa por encima para devolverles el color.</p>
+      </div>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xxl-6 g-3 g-lg-4" id="cardGrid"></div>
+      <div class="empty-state d-none" id="emptyState">
+        <div class="empty-icon">🦉</div>
+        <p>Ni con un encantamiento convocador aparece nadie con esos filtros.</p>
+        <button class="btn btn-magic-outline" id="btnReset"><i class="bi bi-arrow-counterclockwise"></i> Finite Incantatem (limpiar filtros)</button>
+      </div>
+    </section>
+
+    <!-- Vista: Constelación de relaciones -->
+    <section class="view" id="view-mapa" aria-label="Relaciones">
+      <div class="section-head">
+        <h2 class="section-title">Constelación de relaciones</h2>
+        <p class="section-sub">Elige un personaje y verás todos sus vínculos ordenados por tipo. Pulsa cualquier retrato para viajar a su constelación; pulsa el del centro para abrir su grimorio.</p>
+      </div>
+      <div class="focus-picker" id="focusPicker" aria-label="Elegir personaje"></div>
+      <div class="constellation">
+        <div class="graph-shell">
+          <div class="graph-legend" id="graphLegend"></div>
+          <div class="focus-trail" id="focusTrail"></div>
+          <div id="graph" class="graph"></div>
+          <div class="graph-tooltip" id="graphTooltip"></div>
+        </div>
+        <aside class="focus-panel" id="focusPanel" aria-live="polite"></aside>
+      </div>
+    </section>
+
+    <!-- Vista: Mapa del Merodeador -->
+    <section class="view" id="view-merodeador" aria-label="Mapa del Merodeador">
+      <div class="section-head">
+        <h2 class="section-title">El Mapa del Merodeador</h2>
+        <p class="section-sub">Todo Hogwarts en tiempo real: sigue las huellas de cada personaje por el castillo, los terrenos y Hogsmeade. Toca un nombre para abrir su ficha.</p>
+      </div>
+      <div class="mm-shell" id="mmShell">
+        <div class="mm-viewport" id="mmViewport">
+          <svg id="mmSvg" role="img" aria-label="Mapa interactivo de Hogwarts"></svg>
+          <canvas id="mmCanvas" aria-hidden="true"></canvas>
+        </div>
+
+        <!-- Portada: el pergamino cerrado -->
+        <div class="mm-cover" id="mmCover">
+          <div class="mm-flap left"><div class="mm-flap-face"><span class="mm-cover-title">El Mapa</span></div></div>
+          <div class="mm-flap right"><div class="mm-flap-face"><span class="mm-cover-title">del Merodeador</span></div></div>
+          <div class="mm-oath" id="mmOath" aria-live="polite"><span id="mmOathText"></span></div>
+          <button class="mm-open-btn" id="mmOpenBtn"><i class="bi bi-magic"></i> Juro solemnemente que mis intenciones no son buenas</button>
+        </div>
+
+        <div class="mm-toolbar" id="mmToolbar">
+          <select id="mmFind" class="form-select form-select-sm mm-select" aria-label="Buscar a un personaje en el mapa"></select>
+          <button class="mm-btn" id="mmNames" title="Mostrar u ocultar nombres"><i class="bi bi-tags-fill"></i></button>
+          <button class="mm-btn" id="mmZoomIn" title="Acercar"><i class="bi bi-plus-lg"></i></button>
+          <button class="mm-btn" id="mmZoomOut" title="Alejar"><i class="bi bi-dash-lg"></i></button>
+          <button class="mm-btn" id="mmFit" title="Ver todo el mapa"><i class="bi bi-arrows-fullscreen"></i></button>
+          <button class="mm-btn" id="mmReplay" title="Escuchar la frase otra vez"><i class="bi bi-volume-up-fill"></i></button>
+          <div class="dropdown">
+            <button class="mm-btn" id="mmAudioBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Audio de la frase (doblaje en castellano)"><i class="bi bi-mic-fill"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end mm-menu">
+              <li><h6 class="dropdown-header">Frase al abrir el mapa</h6></li>
+              <li><span class="dropdown-item-text" id="mmAudioInfo">Ahora suena: voz en castellano</span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item" id="mmAudioPick"><i class="bi bi-upload"></i> Usar mi audio del doblaje…</button></li>
+              <li><button class="dropdown-item" id="mmAudioDel"><i class="bi bi-trash3"></i> Quitar mi audio</button></li>
+            </ul>
+            <input type="file" id="mmAudioFile" accept="audio/*" hidden>
+          </div>
+          <button class="mm-btn mm-btn-text" id="mmClose" title="Cerrar el mapa"><i class="bi bi-moon-stars-fill"></i> <span>Travesura realizada</span></button>
+        </div>
+        <div class="mm-follow" id="mmFollow"></div>
+        <div class="mm-wheel-hint" id="mmWheelHint">Mantén <kbd>Ctrl</kbd> (<kbd>⌘</kbd> en Mac) y usa la rueda para acercar el mapa</div>
+        <div class="mm-status" id="mmStatus"></div>
+      </div>
+    </section>
+
+    <!-- Vista: Cronología -->
+    <section class="view" id="view-cronologia" aria-label="Cronología">
+      <div class="section-head">
+        <h2 class="section-title">Cronología de la saga</h2>
+        <p class="section-sub">Del duelo de los Dumbledore al andén 9¾. Pulsa un retrato para abrir su ficha o «ver en el mapa» para iluminar a los implicados.</p>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <!-- Vista: Casas -->
+    <section class="view" id="view-casas" aria-label="Casas de Hogwarts">
+      <div class="section-head">
+        <h2 class="section-title">Las cuatro casas de Hogwarts</h2>
+        <p class="section-sub">Elige una casa para teñir la enciclopedia con sus colores y ver a sus miembros.</p>
+      </div>
+      <div class="row g-4" id="houseGrid"></div>
+    </section>
+  </main>
+
+
+  <footer class="site-footer">
+    <div class="container-xxl">
+      <p class="mb-0"><span class="brand-bolt">⚡</span> Espacio web diseñado por <span class="autor">Cristian Navarro Fernández</span></p>
+    </div>
+  </footer>
+
+  <!-- ===================== DOCK DEL VÍDEO ===================== -->
+  <div class="video-dock" id="videoDock">
+    <button class="dock-toggle" id="dockToggle" title="Controles del vídeo de fondo"><i class="bi bi-camera-reels"></i></button>
+    <div class="dock-body">
+      <div class="dock-title">
+        <span class="live-dot"></span>
+        <span id="videoTitle">Cargando escenas…</span>
+      </div>
+      <div class="dock-controls">
+        <button class="btn btn-icon" id="vidPlay" title="Pausar / reproducir"><i class="bi bi-pause-fill"></i></button>
+        <button class="btn btn-icon" id="vidNext" title="Siguiente tráiler"><i class="bi bi-skip-forward-fill"></i></button>
+        <button class="btn btn-icon" id="vidMute" title="Sonido"><i class="bi bi-volume-mute-fill"></i></button>
+        <button class="btn btn-icon" id="vidHide" title="Ocultar vídeo"><i class="bi bi-eye-slash"></i></button>
+        <label class="opacity-wrap" title="Transparencia del vídeo">
+          <i class="bi bi-transparency"></i>
+          <input type="range" id="vidOpacity" min="0" max="70" value="32" class="form-range">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== GRAMOLA: BANDA SONORA ===================== -->
+  <div class="music-host" aria-hidden="true"><div id="musicPlayer"></div></div>
+  <div class="music-host" id="phraseHost" aria-hidden="true"><div id="phrasePlayer"></div></div>
+  <div class="music-dock" id="musicDock">
+    <div class="music-body">
+      <div class="music-progress"><div id="musicBar"></div></div>
+      <div class="music-meta">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        <div class="music-text">
+          <strong id="trackTitle">Banda sonora</strong>
+          <small id="trackInfo">Toca la página para empezar la música</small>
+        </div>
+      </div>
+      <div class="music-controls">
+        <button class="btn btn-icon" id="musPrev" title="Tema anterior"><i class="bi bi-skip-backward-fill"></i></button>
+        <button class="btn btn-icon btn-play" id="musPlay" title="Reproducir / pausar"><i class="bi bi-play-fill"></i></button>
+        <button class="btn btn-icon" id="musNext" title="Siguiente tema"><i class="bi bi-skip-forward-fill"></i></button>
+        <div class="dropup">
+          <button class="btn btn-icon" id="musList" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" title="Lista de temas"><i class="bi bi-music-note-list"></i></button>
+          <ul class="dropdown-menu dropdown-menu-end track-menu" id="trackMenu"></ul>
+        </div>
+        <label class="volume-wrap" title="Volumen">
+          <i class="bi bi-volume-up"></i>
+          <input type="range" id="musVolume" min="0" max="100" value="35" class="form-range" aria-label="Volumen de la música">
+        </label>
+      </div>
+    </div>
+    <button class="vinyl" id="musToggle" title="Gramola mágica: banda sonora" aria-label="Mostrar reproductor de la banda sonora">
+      <span class="vinyl-label">⚡</span>
+    </button>
+  </div>
+
+  <!-- ===================== MODAL: FICHA DEL PERSONAJE ===================== -->
+  <div class="modal fade grimoire-modal" id="charModal" tabindex="-1" aria-labelledby="charModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-lg-down">
+      <div class="modal-content grimoire" id="grimoire">
+        <!-- Se rellena desde JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: SOMBRERO SELECCIONADOR ===================== -->
+  <div class="modal fade hat-modal" id="hatModal" tabindex="-1" aria-labelledby="hatTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content hat-content">
+        <button type="button" class="btn-close btn-close-white hat-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="hat-icon">🎩</div>
+        <h3 id="hatTitle" class="hat-title">La Ceremonia de Selección</h3>
+        <div id="hatBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TOASTS ===================== -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" id="toastBox"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/merodeador.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
